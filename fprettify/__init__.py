@@ -2138,5 +2138,5 @@ def run(argv=sys.argv):  # pragma: no cover
                                  indent_fypp=not file_args.disable_fypp,
                                  indent_mod=not file_args.disable_indent_mod)
             except FprettifyException as e:
-                log_exception(e, "Fatal error occured")
+                log_exception(e, "Fatal error occurred")
                 sys.exit(1)
