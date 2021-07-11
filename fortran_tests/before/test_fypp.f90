@@ -141,7 +141,7 @@ end function sin2_${rkind}$
 #! create kinds_names as [('sp', 'real'), ('dp', 'dreal')]
 #:set kinds_names = list(zip(kinds, names))
 
-#! Acces by indexing
+#! Access by indexing
 interface sin2
 #:for kind_name in kinds_names
   module procedure sin2_${kind_name[1]}$
