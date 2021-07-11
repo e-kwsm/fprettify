@@ -274,7 +274,7 @@ def add_test_method(testcase, fpath, ffile, args):
             FprettifyIntegrationTestCase.n_unexpectedfail += 1
             raise
 
-        # check that no changes other than whitespace changes or lower/upper case occured
+        # check that no changes other than whitespace changes or lower/upper case occurred
         orig_stripped = normalize_line(instring)
         new_stripped = normalize_line(outstring)
 

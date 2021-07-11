@@ -3344,5 +3344,5 @@ def run(argv=sys.argv):  # pragma: no cover
                 reformat_inplace(filename, **file_args)
 
             except FprettifyException as e:
-                log_exception(e, "Fatal error occured")
+                log_exception(e, "Fatal error occurred")
                 sys.exit(1)

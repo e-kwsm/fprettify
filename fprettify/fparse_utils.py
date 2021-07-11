@@ -85,7 +85,7 @@ class FprettifyException(Exception):
 
 
 class FprettifyParseException(FprettifyException):
-    """Exception for unparseable Fortran code (user's fault)."""
+    """Exception for unparsable Fortran code (user's fault)."""
 
     pass
 
@@ -202,7 +202,7 @@ class InputStream(object):
 
     def next_fortran_line(self):
         """Reads a group of connected lines (connected with &, separated by newline or semicolon)
-        returns a touple with the joined line, and a list with the original lines.
+        returns a tuple with the joined line, and a list with the original lines.
         Doesn't support multiline character constants!
         """
         joined_line = ""
