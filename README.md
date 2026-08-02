@@ -221,6 +221,22 @@ For `suite`, you should pick one of the following test suites:
 - `regular`: for small code bases (executed for every pull request)
 - `cron`: for larger code bases (executed nightly)
 
+Upon running an integration test, `fprettify` is applied in-place to Fortran
+code checked out under `fortran_tests/test_code`. Note that upon running tests
+twice, the output of the first run is the new input of the second run. A reset
+can be achieved by removing `fortran_tests/test_code`. Running integration
+tests multiple times is an important check for idempotency, i.e. that running
+`fprettify` twice doesn't alter results (not yet checked
+automatically).
+
+In case of a test failure, the reported diff just shows input vs. output. Note
+that this diff is usually not related to the test failure, as it shows all
+changes relative to the *unformatted* Fortran code (from an external source).
+To get a diff specifically relative to the *expected* output, you need to run
+integration test first with the reference version of `fprettify`, then with the
+version of `fprettify` causing the failure. Backups of each test run's input
+are stored as `fortran_tests/test_code_in_<date-time>`.
+
 
 ### How to locally run all unit and integration tests:
 
@@ -243,7 +259,7 @@ For `suite`, you should pick one of the following test suites:
       `./run_tests.py -n ...`
       
 
-### How to deal with test failures
+### How to debug and fix test failures
 
 Test failures are always due to fprettify-formatted code being different than
 expected. To examine what has changed, proceed as follows:
@@ -251,19 +267,21 @@ expected. To examine what has changed, proceed as follows:
   output shows the diff of the actual vs. expected result. 
 - Integration tests: we don't store the expected version of Fortran code,
   instead we compare SHA256 checksums of the actual vs. expected result. The
-  test output shows the diff of the actual result vs. the *previous* version of
-  the code (that is, the version before `fprettify` was applied). Thus, in
-  order to obtain the diff of the actual vs. the *expected* result, the
-  following steps need to be executed:
+  test output shows the diff of the actual result vs. the *original* version of
+  the Fortran code (that is, the version before `fprettify` was applied). In
+  order to get a meaningful diff (specific to the failure), you need to first
+  run the test with the reference version of fprettify (for which the test
+  passes), then with the fprettify version causing the failure.
 
-  1. Run `./run_tests.py -s` followed by the name of the failed test suite. Check
-     the test output for lines mentioning test failures such as: 
-     `Test top-level-dir/subdir/file.f (fprettify.tests.fortrantests.FprettifyIntegrationTestCase) ... checksum FAIL`.
-  2. Check out the reference version of `fprettify` for which the test passes (normally, `develop` branch).
-  3. Run the integration test(s) via `./run_tests.py -n top-level-dir` (replacing
+  More specifically, the following steps need to be executed for a test
+  failure, which is assumed to be reported as 
+  `Test top-level-dir/subdir/file.f (fprettify.tests.fortrantests.FprettifyIntegrationTestCase) ... checksum FAIL`:
+
+  1. Check out the reference version of `fprettify` for which the test passes (normally, `master` branch).
+  2. Run the integration test(s) via `./run_tests.py -n top-level-dir` (replacing
      `top-level-dir` with the actual directory mentioned in the test output).
-  4. Check out the version of `fprettify` for which the test failed and run the integration tests again.
-  5. Now the `diff` shown in the test output shows the exact changes which caused the test to fail.
+  3. Check out the version of `fprettify` for which the test failed and run the integration tests again.
+  4. Now the `diff` shown in the test output shows the exact changes which caused the test to fail.
 
 If you decide to accept the changes as new test references, proceed as follows:
 - Unit tests: update the expected test result within the respective test method (third argument to function `self.assert_fprettify_result`)
